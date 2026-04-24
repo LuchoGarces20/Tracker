@@ -1,0 +1,137 @@
+:root {
+    --bg-color: #F8FAFC; 
+    --surface-color: #ffffff; 
+    --text-color: #1e293b; 
+    --text-muted: #94A3B8;
+    --border-color: #F1F5F9; 
+    --primary-color: #0F766E; 
+    --primary-hover: #14B8A6;
+    --primary-gradient: rgba(15, 118, 110, 0.08);
+    --danger-color: #EF4444; 
+    --success-color: #10B981;
+    --tab-bg: #F0FDFA;
+    --shadow-color: rgb(0 0 0 / 0.05);
+}
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-color: #0f172a; 
+        --surface-color: #1e293b; 
+        --text-color: #f8fafc; 
+        --text-muted: #94a3b8;
+        --border-color: #334155; 
+        --primary-color: #2DD4BF; 
+        --primary-hover: #14B8A6;
+        --primary-gradient: rgba(45, 212, 191, 0.12);
+        --tab-bg: #134e4a;
+        --shadow-color: rgb(0 0 0 / 0.2);
+    }
+}
+
+* { -webkit-tap-highlight-color: transparent; }
+
+body { 
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif; 
+    -webkit-font-smoothing: antialiased;
+    background-color: var(--bg-color); 
+    color: var(--text-color); 
+    margin: 0; 
+    display: flex; 
+    justify-content: center; 
+    font-weight: 400; 
+    overscroll-behavior-y: none;
+}
+
+#app-movil { 
+    background-color: var(--surface-color); 
+    width: 100%; 
+    max-width: 450px; 
+    min-height: 100vh; 
+    padding: calc(2rem + env(safe-area-inset-top)) calc(2rem + env(safe-area-inset-right)) calc(2rem + env(safe-area-inset-bottom)) calc(2rem + env(safe-area-inset-left)); 
+    box-sizing: border-box; 
+    box-shadow: 0 4px 20px var(--shadow-color); 
+    -webkit-overflow-scrolling: touch;
+}
+
+.header-app { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding-bottom: 10px; 
+    margin-bottom: 20px;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+@media (prefers-color-scheme: dark) {
+    .header-app { background: rgba(30, 41, 59, 0.8); }
+}
+
+h1 { margin: 0; font-size: 1.6rem; font-weight: 700; }
+.btn-icono { background: none; border: none; font-size: 1.5rem; cursor: pointer; padding: 5px; color: var(--primary-color); transition: transform 0.2s ease; }
+h3 { font-size: 1.2rem; margin-bottom: 1rem; color: var(--primary-color); padding-bottom: 5px; font-weight: 700; }
+
+.transicion-seccion {
+    transition: opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease;
+    opacity: 1; transform: translateY(0); max-height: 2500px; overflow: hidden;
+}
+.oculto { 
+    opacity: 0; transform: translateY(10px); max-height: 0; pointer-events: none; margin: 0 !important; padding: 0 !important; border: none !important;
+}
+
+.lang-flags { display: flex; gap: 8px; background: var(--border-color); padding: 4px 8px; border-radius: 20px; align-items: center; }
+.flag { cursor: pointer; opacity: 0.4; transition: opacity 0.2s, transform 0.2s; font-size: 1.2rem; filter: grayscale(100%); }
+.flag:hover { transform: scale(1.1); filter: grayscale(0%); opacity: 0.8;}
+.flag.active { opacity: 1; transform: scale(1.1); filter: grayscale(0%); }
+
+.onboarding-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+.tab-btn { flex: 1; padding: 10px; text-align: center; background: transparent; border: 2px solid var(--border-color); border-radius: 12px; color: var(--text-muted); font-weight: 500; cursor: pointer; transition: 0.2s; font-size: 0.85rem;}
+.tab-btn.active { background: var(--tab-bg); border-color: var(--primary-color); color: var(--primary-color); font-weight: 700; }
+.calc-result { background-color: var(--tab-bg); padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: center; border: 1px dashed var(--primary-color);}
+.calc-result strong { font-size: 1.5rem; color: var(--primary-color); display: block; margin-top: 5px; font-variant-numeric: tabular-nums;}
+
+.grid-balances { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
+.balance-card { text-align: center; padding: 1rem 0.5rem; background: var(--surface-color); border-radius: 16px; border: none; box-shadow: 0 4px 6px -1px var(--shadow-color), 0 2px 4px -2px var(--shadow-color); }
+.balance-card.highlight { background: linear-gradient(135deg, var(--primary-gradient) 0%, transparent 100%); grid-column: span 2; padding: 1.5rem; }
+.b-title { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; display: block; font-weight: 500;}
+.b-amount { font-size: 1.5rem; font-weight: 700; color: var(--text-color); font-variant-numeric: tabular-nums; }
+.highlight .b-amount { font-size: 2.8rem; color: var(--primary-color); font-weight: 800; }
+
+.custom-progress { width: 100%; height: 12px; background-color: var(--border-color); border-radius: 6px; margin-top: 10px; overflow: hidden; }
+.custom-progress-fill { height: 100%; background-color: var(--success-color); border-radius: 6px; width: 0%; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease; }
+.custom-progress-fill.warning { background-color: var(--danger-color); }
+
+.form-group { margin-bottom: 1rem; text-align: left;}
+label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 500; color: var(--text-color);}
+input, select { width: 100%; padding: 0.8rem; border: 1px solid var(--border-color); border-radius: 12px; background-color: var(--bg-color); color: var(--text-color); box-sizing: border-box; font-size: 1rem; font-family: inherit;}
+button.btn-principal { width: 100%; padding: 1rem; background-color: var(--primary-color); color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: background-color 0.2s ease, opacity 0.2s ease; margin-bottom: 10px;}
+button.btn-principal:hover { background-color: var(--primary-hover); }
+button.btn-principal:active { opacity: 0.7; }
+
+.log { list-style: none; padding: 0; margin: 0; }
+.log li { border-radius: 12px; padding: 1rem 0.5rem; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; transition: background-color 0.2s ease; box-shadow: 0 1px 2px var(--shadow-color); background-color: var(--surface-color);}
+.log li:hover { background-color: var(--bg-color); }
+.expense-info { display: flex; flex-direction: column; flex-grow: 1; margin-left: 10px; overflow: hidden; }
+.expense-desc { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.expense-cat { font-size: 0.75rem; color: var(--primary-color); text-transform: uppercase; font-weight: 700; margin-top: 2px;}
+.expense-date { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
+.expense-amount { font-weight: 700; font-size: 1.1rem; font-variant-numeric: tabular-nums;}
+.cat-icon { font-size: 1.5rem; width: 35px; text-align: center; }
+
+.delete-btn { background-color: var(--danger-color); color: white; border: none; width: auto; padding: 0.4rem 0.8rem; font-size: 0.8rem; margin: 0 0 0 0.5rem; border-radius: 8px; cursor: pointer;}
+.edit-btn { background-color: var(--primary-color); color: white; border: none; width: auto; padding: 0.4rem 0.8rem; font-size: 0.8rem; margin: 0 0 0 0.5rem; border-radius: 8px; cursor: pointer;}
+.actions-row { display: flex; align-items: center; }
+.btn-secundario { background-color: transparent; border: 2px solid var(--border-color); color: var(--primary-color); width: 100%; padding: 1rem; border-radius: 12px; font-weight: 700; cursor: pointer; margin-top: 10px; transition: background-color 0.2s, border-color 0.2s, opacity 0.2s;}
+.btn-secundario:hover { border-color: var(--primary-color); background-color: var(--primary-gradient); }
+.btn-secundario:active { opacity: 0.7; }
+.btn-pequeno { padding: 0.5rem; font-size: 0.85rem; margin-bottom: 10px;}
+
+.cat-breakdown { margin-bottom: 20px; }
+.cat-bar-container { display: flex; align-items: center; margin-bottom: 8px; font-size: 0.85rem;}
+.cat-bar-label { width: 30%; font-weight: 500; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cat-bar-wrapper { width: 45%; background: var(--border-color); height: 8px; border-radius: 4px; margin: 0 10px; overflow: hidden;}
+.cat-bar-fill { height: 100%; background: var(--primary-color); border-radius: 4px;}
+.cat-bar-amount { width: 25%; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums;}
