@@ -38,26 +38,28 @@ export function renderizarSelectCategorias(customCats) {
 export function actualizarInterfaz(state, mesActual, añoActual, hoy) {
     const localeStr = currentLang === 'es' ? 'es-ES' : (currentLang === 'pt' ? 'pt-BR' : 'en-US');
     const formatoDinero = new Intl.NumberFormat(localeStr, { style: 'currency', currency: state.monedaActual });
+    
     const gastosMesActual = state.historialGlobal.filter(g => new Date(g.fecha).getMonth() === mesActual && new Date(g.fecha).getFullYear() === añoActual);
-    const totalGastadoMes = gastosMesActual.reduce((acc, g) => acc + g.monto, 0);
-    const dineroRestante = state.presupuestoMensual - totalGastadoMes;
+    
+    const totalGastadoMesCents = gastosMesActual.reduce((acc, g) => acc + g.monto, 0);
+    const dineroRestanteCents = state.presupuestoMensual - totalGastadoMesCents;
     const diasRestantes = (new Date(añoActual, mesActual + 1, 0).getDate() - hoy.getDate()) + 1;
-    const presupuestoDiario = dineroRestante / diasRestantes;
+    const presupuestoDiarioCents = Math.max(0, Math.floor(dineroRestanteCents / diasRestantes));
     
     const elDiario = document.getElementById('display-diario');
     const elMensual = document.getElementById('display-mensual');
     const elGastado = document.getElementById('display-gastado');
     const barraFill = document.getElementById('progreso-mensual-fill');
 
-    elDiario.innerText = formatoDinero.format(presupuestoDiario);
-    elMensual.innerText = formatoDinero.format(dineroRestante);
-    elGastado.innerText = formatoDinero.format(totalGastadoMes);
+    elDiario.innerText = formatoDinero.format(presupuestoDiarioCents / 100);
+    elMensual.innerText = formatoDinero.format(dineroRestanteCents / 100);
+    elGastado.innerText = formatoDinero.format(totalGastadoMesCents / 100);
 
-    let porcentajeGastado = (totalGastadoMes / state.presupuestoMensual) * 100;
-    if (porcentajeGastado > 100) porcentajeGastado = 100;
+    let porcentajeGastado = (totalGastadoMesCents / state.presupuestoMensual) * 100;
+    if (porcentajeGastado > 100 || isNaN(porcentajeGastado)) porcentajeGastado = 100;
     barraFill.style.width = `${porcentajeGastado}%`;
     
-    if (dineroRestante < (state.presupuestoMensual * WARNING_THRESHOLD)) { 
+    if (dineroRestanteCents < (state.presupuestoMensual * WARNING_THRESHOLD)) { 
         barraFill.classList.add('warning'); 
         elDiario.style.color = "var(--danger-color)"; 
     } else { 
@@ -67,57 +69,67 @@ export function actualizarInterfaz(state, mesActual, añoActual, hoy) {
 
     const contGrafico = document.getElementById('grafico-categorias');
     const categoriasActuales = obtenerCategorias(state.categoriasCustom);
-
+    
+    contGrafico.innerHTML = ''; 
     if (gastosMesActual.length > 0) {
-        const sumasPorCat = {};
-        gastosMesActual.forEach(g => { sumasPorCat[g.categoria] = (sumasPorCat[g.categoria] || 0) + g.monto; });
+        const sumasPorCatCents = {};
+        gastosMesActual.forEach(g => { sumasPorCatCents[g.categoria] = (sumasPorCatCents[g.categoria] || 0) + g.monto; });
         
-        let graficoHTML = '';
-        for (const catId in sumasPorCat) {
+        const fragChart = document.createDocumentFragment();
+        for (const catId in sumasPorCatCents) {
             if(catId === 'otros_previo') continue; 
-            const porcentaje = (sumasPorCat[catId] / totalGastadoMes) * 100;
+            const porcentaje = (sumasPorCatCents[catId] / totalGastadoMesCents) * 100;
             const infoCat = categoriasActuales.find(c => c.id === catId) || { emoji: '📦', nombre: catId };
             
-            graficoHTML += `
-                <div class="cat-bar-container">
-                    <div class="cat-bar-label" title="${escapeHTML(infoCat.nombre)}">${escapeHTML(infoCat.emoji)} ${escapeHTML(infoCat.nombre)}</div>
-                    <div class="cat-bar-wrapper"><div class="cat-bar-fill" style="width: ${porcentaje}%"></div></div>
-                    <div class="cat-bar-amount">${escapeHTML(formatoDinero.format(sumasPorCat[catId]))}</div>
-                </div>
+            const el = document.createElement('div');
+            el.className = 'cat-bar-container';
+            el.innerHTML = `
+                <div class="cat-bar-label" title="${escapeHTML(infoCat.nombre)}">${escapeHTML(infoCat.emoji)} ${escapeHTML(infoCat.nombre)}</div>
+                <div class="cat-bar-wrapper"><div class="cat-bar-fill" style="width: ${porcentaje}%"></div></div>
+                <div class="cat-bar-amount">${escapeHTML(formatoDinero.format(sumasPorCatCents[catId] / 100))}</div>
             `;
+            fragChart.appendChild(el);
         }
-        contGrafico.innerHTML = graficoHTML; 
+        contGrafico.appendChild(fragChart);
     } else {
-        contGrafico.innerHTML = `<p style="text-align:center; color: var(--text-muted); font-size: 0.85rem;">${escapeHTML(t('noExpenses'))}</p>`;
+        const p = document.createElement('p');
+        p.className = 'no-expenses-text';
+        p.textContent = t('noExpenses');
+        contGrafico.appendChild(p);
     }
 
     const listaUI = document.getElementById('lista-historial');
+    listaUI.innerHTML = '';
+    
     if(gastosMesActual.length === 0) {
-        listaUI.innerHTML = `<li style="color: var(--text-muted); justify-content:center; box-shadow: none; background: transparent; cursor: default;">${escapeHTML(t('noExpenses'))}</li>`;
+        const li = document.createElement('li');
+        li.className = 'no-expenses-li';
+        li.textContent = t('noExpenses');
+        listaUI.appendChild(li);
     } else {
-        let listaHTML = '';
+        const fragList = document.createDocumentFragment();
         for (let i = gastosMesActual.length - 1; i >= 0; i--) {
             const g = gastosMesActual[i];
             const fechaStr = new Date(g.fecha).toLocaleString(localeStr, { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit'});
             const infoCat = categoriasActuales.find(c => c.id === g.categoria) || { emoji: '📌', nombre: g.categoria };
             
-            listaHTML += `
-                <li>
-                    <div class="cat-icon">${escapeHTML(infoCat.emoji)}</div>
-                    <div class="expense-info">
-                        <span class="expense-desc" title="${escapeHTML(g.desc)}">${escapeHTML(g.desc)}</span>
-                        <span class="expense-cat">${escapeHTML(infoCat.nombre)}</span>
-                        <span class="expense-date">${escapeHTML(fechaStr)}</span>
-                    </div>
-                    <div class="actions-row">
-                        <span class="expense-amount" style="margin-right: 8px;">${escapeHTML(formatoDinero.format(g.monto))}</span>
-                        <button class="edit-btn" data-id="${g.id}">✏️</button>
-                        <button class="delete-btn" data-id="${g.id}">✕</button>
-                    </div>
-                </li>
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <div class="cat-icon">${escapeHTML(infoCat.emoji)}</div>
+                <div class="expense-info">
+                    <span class="expense-desc" title="${escapeHTML(g.desc)}">${escapeHTML(g.desc)}</span>
+                    <span class="expense-cat">${escapeHTML(infoCat.nombre)}</span>
+                    <span class="expense-date">${escapeHTML(fechaStr)}</span>
+                </div>
+                <div class="actions-row">
+                    <span class="expense-amount" style="margin-right: 8px;">${escapeHTML(formatoDinero.format(g.monto / 100))}</span>
+                    <button class="edit-btn" data-id="${g.id}">✏️</button>
+                    <button class="delete-btn" data-id="${g.id}">✕</button>
+                </div>
             `;
+            fragList.appendChild(li);
         }
-        listaUI.innerHTML = listaHTML; 
+        listaUI.appendChild(fragList);
     }
 }
 

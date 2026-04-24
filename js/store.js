@@ -1,15 +1,24 @@
+export const STORAGE_KEYS = {
+    PRESUPUESTO: 'floux_presupuesto_v8',
+    HISTORIAL: 'floux_historial_v8',
+    MONEDA: 'floux_moneda',
+    CATEGORIAS: 'floux_categorias_custom',
+    MES_GUARDADO: 'floux_mes_guardado',
+    LANG: 'floux_lang'
+};
+
 export const state = {
-    presupuestoMensual: 0,
-    historialGlobal: [],
+    presupuestoMensual: 0, // Stored as integer (cents)
+    historialGlobal: [],   // Monto stored as integer (cents)
     monedaActual: 'BRL',
     categoriasCustom: []
 };
 
 export function loadStore() {
-    const p = localStorage.getItem('floux_presupuesto_v8');
-    const h = localStorage.getItem('floux_historial_v8');
-    const m = localStorage.getItem('floux_moneda');
-    const c = localStorage.getItem('floux_categorias_custom');
+    const p = localStorage.getItem(STORAGE_KEYS.PRESUPUESTO);
+    const h = localStorage.getItem(STORAGE_KEYS.HISTORIAL);
+    const m = localStorage.getItem(STORAGE_KEYS.MONEDA);
+    const c = localStorage.getItem(STORAGE_KEYS.CATEGORIAS);
 
     if (m) state.monedaActual = m;
     
@@ -19,7 +28,7 @@ export function loadStore() {
     }
     
     if (p) {
-        state.presupuestoMensual = parseFloat(p);
+        state.presupuestoMensual = parseInt(p, 10);
         try {
             const parsedHistorial = JSON.parse(h);
             if (isValidoHistorialSchema(parsedHistorial)) {
@@ -34,10 +43,10 @@ export function loadStore() {
 }
 
 export function saveStore() {
-    localStorage.setItem('floux_presupuesto_v8', state.presupuestoMensual);
-    localStorage.setItem('floux_historial_v8', JSON.stringify(state.historialGlobal));
-    localStorage.setItem('floux_moneda', state.monedaActual);
-    localStorage.setItem('floux_categorias_custom', JSON.stringify(state.categoriasCustom));
+    localStorage.setItem(STORAGE_KEYS.PRESUPUESTO, state.presupuestoMensual);
+    localStorage.setItem(STORAGE_KEYS.HISTORIAL, JSON.stringify(state.historialGlobal));
+    localStorage.setItem(STORAGE_KEYS.MONEDA, state.monedaActual);
+    localStorage.setItem(STORAGE_KEYS.CATEGORIAS, JSON.stringify(state.categoriasCustom));
 }
 
 export function isValidoHistorialSchema(data) {

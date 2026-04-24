@@ -1,4 +1,4 @@
-import { state, loadStore, saveStore, isValidoHistorialSchema } from './store.js';
+import { state, loadStore, saveStore, isValidoHistorialSchema, STORAGE_KEYS } from './store.js';
 import { currentLang, t, setLangStr } from './i18n.js';
 import { aplicarTraduccion, renderizarSelectCategorias, actualizarInterfaz, resetFormularioGasto } from './ui.js';
 
@@ -10,14 +10,26 @@ const mesActual = hoy.getMonth();
 const añoActual = hoy.getFullYear();
 
 let modoActual = 'directo';
-let presupuestoCalculadoTemporal = 0;
+let presupuestoCalculadoTemporalCents = 0;
+
+// Cached DOM Elements
+const inputIngresos = document.getElementById('input-ingresos');
+const inputFijos = document.getElementById('input-fijos');
+const inputInversiones = document.getElementById('input-inversiones');
+const displayCalculado = document.getElementById('display-calculado');
+const inputMoneda = document.getElementById('input-moneda');
+const inputPresupuesto = document.getElementById('input-presupuesto');
+
+const lsimMonto = document.getElementById('input-lsim-monto');
+const lsimAnos = document.getElementById('input-lsim-anos');
+const lsimTasa = document.getElementById('input-lsim-tasa');
+const lsimResultado = document.getElementById('display-lsim-resultado');
 
 // Application Initialization
 function init() {
     const hasData = loadStore();
-    document.getElementById('input-moneda').value = state.monedaActual;
+    inputMoneda.value = state.monedaActual;
     
-    // Set initial active flag
     const activeFlag = document.querySelector(`.flag[data-lang="${currentLang}"]`);
     if (activeFlag) activeFlag.classList.add('active');
 
@@ -25,8 +37,8 @@ function init() {
     renderizarSelectCategorias(state.categoriasCustom);
 
     if (hasData) {
-        if (localStorage.getItem('floux_mes_guardado') === null || parseInt(localStorage.getItem('floux_mes_guardado')) !== mesActual) {
-            localStorage.setItem('floux_mes_guardado', mesActual);
+        if (localStorage.getItem(STORAGE_KEYS.MES_GUARDADO) === null || parseInt(localStorage.getItem(STORAGE_KEYS.MES_GUARDADO)) !== mesActual) {
+            localStorage.setItem(STORAGE_KEYS.MES_GUARDADO, mesActual);
         }
         mostrarPantallaPrincipal();
     }
@@ -75,36 +87,35 @@ tabCalc.addEventListener('click', () => {
 
 document.querySelectorAll('.input-calc').forEach(input => {
     input.addEventListener('input', () => {
-        const i = parseFloat(document.getElementById('input-ingresos').value);
-        const f = parseFloat(document.getElementById('input-fijos').value);
-        const v = parseFloat(document.getElementById('input-inversiones').value);
-        
-        const ing = isNaN(i) ? 0 : i;
-        const fij = isNaN(f) ? 0 : f;
-        const inv = isNaN(v) ? 0 : v;
+        const i = Math.round((parseFloat(inputIngresos.value) || 0) * 100);
+        const f = Math.round((parseFloat(inputFijos.value) || 0) * 100);
+        const v = Math.round((parseFloat(inputInversiones.value) || 0) * 100);
 
-        presupuestoCalculadoTemporal = Math.max(0, ing - fij - inv);
+        presupuestoCalculadoTemporalCents = Math.max(0, i - f - v);
         const localeStr = currentLang === 'es' ? 'es-ES' : (currentLang === 'pt' ? 'pt-BR' : 'en-US');
-        document.getElementById('display-calculado').innerText = new Intl.NumberFormat(localeStr, { style: 'currency', currency: document.getElementById('input-moneda').value }).format(presupuestoCalculadoTemporal);
+        displayCalculado.innerText = new Intl.NumberFormat(localeStr, { style: 'currency', currency: inputMoneda.value }).format(presupuestoCalculadoTemporalCents / 100);
     });
 });
 
 document.getElementById('btn-comenzar').addEventListener('click', () => {
-    state.presupuestoMensual = modoActual === 'directo' ? parseFloat(document.getElementById('input-presupuesto').value) : presupuestoCalculadoTemporal;
-    state.monedaActual = document.getElementById('input-moneda').value; 
+    const inputVal = parseFloat(inputPresupuesto.value);
+    const presupuestoDirectoCents = Math.round((isNaN(inputVal) ? 0 : inputVal) * 100);
     
-    if (isNaN(state.presupuestoMensual) || state.presupuestoMensual <= 0) {
+    state.presupuestoMensual = modoActual === 'directo' ? presupuestoDirectoCents : presupuestoCalculadoTemporalCents;
+    state.monedaActual = inputMoneda.value; 
+    
+    if (state.presupuestoMensual <= 0) {
         alert(t('errorBudget'));
         return;
     }
 
     if (!document.getElementById('area-gastos-previos').classList.contains('oculto')) {
         const inputInicial = parseFloat(document.getElementById('input-gastos-iniciales').value);
-        const inicial = isNaN(inputInicial) ? 0 : inputInicial;
-        if (inicial > 0) state.historialGlobal.push({ id: Date.now(), monto: inicial, desc: t('prevExpense'), fecha: new Date().toISOString(), categoria: 'otros_previo' });
+        const inicialCents = Math.round((isNaN(inputInicial) ? 0 : inputInicial) * 100);
+        if (inicialCents > 0) state.historialGlobal.push({ id: Date.now(), monto: inicialCents, desc: t('prevExpense'), fecha: new Date().toISOString(), categoria: 'otros_previo' });
     }
 
-    localStorage.setItem('floux_mes_guardado', mesActual); 
+    localStorage.setItem(STORAGE_KEYS.MES_GUARDADO, mesActual); 
     guardarYMostrar();
 });
 
@@ -112,20 +123,21 @@ document.getElementById('btn-comenzar').addEventListener('click', () => {
 document.getElementById('form-gasto').addEventListener('submit', (e) => {
     e.preventDefault(); 
     const monto = parseFloat(document.getElementById('input-monto').value);
+    const montoCents = Math.round(monto * 100);
     const desc = document.getElementById('input-desc').value.trim();
     const cat = document.getElementById('input-categoria').value;
     
-    if (!isNaN(monto) && monto > 0 && desc) {
+    if (!isNaN(montoCents) && montoCents > 0 && desc) {
         if (gastoEnEdicion) {
             const index = state.historialGlobal.findIndex(g => g.id === gastoEnEdicion);
             if (index !== -1) {
-                state.historialGlobal[index].monto = monto;
+                state.historialGlobal[index].monto = montoCents;
                 state.historialGlobal[index].desc = desc;
                 state.historialGlobal[index].categoria = cat;
             }
             resetFormularioGasto(setGastoEnEdicion);
         } else {
-            state.historialGlobal.push({ id: Date.now(), monto: monto, desc: desc, fecha: new Date().toISOString(), categoria: cat });
+            state.historialGlobal.push({ id: Date.now(), monto: montoCents, desc: desc, fecha: new Date().toISOString(), categoria: cat });
             document.getElementById('input-monto').value = '';
             document.getElementById('input-desc').value = '';
         }
@@ -146,7 +158,7 @@ document.getElementById('lista-historial').addEventListener('click', (e) => {
         const id = parseInt(btnEdit.getAttribute('data-id'), 10);
         const gasto = state.historialGlobal.find(g => g.id === id);
         if (gasto) {
-            document.getElementById('input-monto').value = gasto.monto;
+            document.getElementById('input-monto').value = (gasto.monto / 100).toFixed(2);
             document.getElementById('input-desc').value = gasto.desc;
             document.getElementById('input-categoria').value = gasto.categoria;
             setGastoEnEdicion(id);
@@ -183,8 +195,8 @@ document.getElementById('btn-editar-presupuesto').addEventListener('click', () =
     document.getElementById('pantalla-configuracion').classList.remove('oculto');
     document.getElementById('area-gastos-previos').classList.add('oculto');
     tabDirecto.click();
-    document.getElementById('input-presupuesto').value = state.presupuestoMensual;
-    document.getElementById('input-moneda').value = state.monedaActual; 
+    inputPresupuesto.value = (state.presupuestoMensual / 100).toFixed(2);
+    inputMoneda.value = state.monedaActual; 
 });
 
 // Event Listeners - Data Management
@@ -235,21 +247,17 @@ document.getElementById('btn-reiniciar').addEventListener('click', () => {
         location.reload(); 
     } 
 });
+
 // --- LSim Logic ---
 const pantallaPrincipal = document.getElementById('pantalla-principal');
 const pantallaSimulador = document.getElementById('pantalla-simulador');
 const btnAbrirSimulador = document.getElementById('btn-abrir-simulador');
 const btnCerrarSimulador = document.getElementById('btn-cerrar-simulador');
 
-const lsimMonto = document.getElementById('input-lsim-monto');
-const lsimAnos = document.getElementById('input-lsim-anos');
-const lsimTasa = document.getElementById('input-lsim-tasa');
-const lsimResultado = document.getElementById('display-lsim-resultado');
-
 btnAbrirSimulador.addEventListener('click', () => {
     pantallaPrincipal.classList.add('oculto');
     pantallaSimulador.classList.remove('oculto');
-    calcularPerdidaInvisible(); // Initialize with zeros/defaults
+    calcularPerdidaInvisible(); 
 });
 
 btnCerrarSimulador.addEventListener('click', () => {
@@ -258,21 +266,22 @@ btnCerrarSimulador.addEventListener('click', () => {
 });
 
 function calcularPerdidaInvisible() {
-    const p = parseFloat(lsimMonto.value) || 0;
-    const t = parseFloat(lsimAnos.value) || 0;
+    const pCents = Math.round((parseFloat(lsimMonto.value) || 0) * 100);
+    const tVal = parseFloat(lsimAnos.value) || 0;
     const r = (parseFloat(lsimTasa.value) || 0) / 100;
 
-    const futureValue = p * Math.pow(1 + r, t);
+    const futureValueCents = pCents * Math.pow(1 + r, tVal);
 
     const localeStr = currentLang === 'es' ? 'es-ES' : (currentLang === 'pt' ? 'pt-BR' : 'en-US');
     lsimResultado.innerText = new Intl.NumberFormat(localeStr, { 
         style: 'currency', 
         currency: state.monedaActual 
-    }).format(futureValue);
+    }).format(futureValueCents / 100);
 }
 
 document.querySelectorAll('.input-lsim').forEach(input => {
     input.addEventListener('input', calcularPerdidaInvisible);
 });
+
 // Boot
 init();

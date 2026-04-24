@@ -8,21 +8,24 @@
 </head>
 <body>
 <main id="app-movil">
-    <div class="header-app">
-        <h1 id="titulo-mes">Floux</h1>
-        <div style="display: flex; gap: 10px; align-items: center;">
-            <div class="lang-flags" id="lang-container">
-                <span class="flag" data-lang="es" title="Español">🇪🇸</span>
-                <span class="flag" data-lang="en" title="English">🇺🇸</span>
-                <span class="flag" data-lang="pt" title="Português">🇧🇷</span>
-            </div>
-            <button id="btn-editar-presupuesto" class="btn-icono transicion-seccion oculto">⚙️</button>
-        </div>
+  <div class="header-app">
+    <div class="brand-title">
+        <img src="img/gemini-svg-3.svg" alt="Floux" class="logo-light">
+        <img src="img/gemini-svg-4.svg" alt="Floux" class="logo-dark">
     </div>
+    <div class="header-actions">
+        <div class="lang-flags" id="lang-container">
+            <span class="flag active" data-lang="es" title="Español">🇪🇸</span>
+            <span class="flag" data-lang="en" title="English">🇺🇸</span>
+            <span class="flag" data-lang="pt" title="Português">🇧🇷</span>
+        </div>
+        <button id="btn-editar-presupuesto" class="btn-icono transicion-seccion oculto">⚙️</button>
+    </div>
+</div>
 
     <section id="pantalla-simulador" class="transicion-seccion oculto">
     <h3 data-i18n="lsimTitle">LSim - Invisible Loss</h3>
-    <p data-i18n="lsimDesc" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;"></p>
+    <p data-i18n="lsimDesc" class="lsim-desc"></p>
     
     <div class="form-group">
         <label data-i18n="lsimAmount">Purchase Cost</label>
@@ -37,12 +40,12 @@
         <input type="number" id="input-lsim-tasa" value="8" inputmode="decimal" class="input-lsim">
     </div>
     
-    <div class="calc-result" style="margin-top: 20px;">
+    <div class="calc-result mt-20">
         <span data-i18n="lsimResult">Invisible Loss (Opportunity Cost):</span>
         <strong id="display-lsim-resultado">0.00</strong>
     </div>
     
-    <button id="btn-cerrar-simulador" class="btn-secundario" data-i18n="btnClose" style="margin-top: 20px;">Close</button>
+    <button id="btn-cerrar-simulador" class="btn-secundario mt-20" data-i18n="btnClose">Close</button>
     </section>
 
     <section id="pantalla-configuracion" class="transicion-seccion">
@@ -117,7 +120,7 @@
             </div>
         </div>
 
-        <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1.5rem 0;">
+        <hr class="divider">
 
         <h3 data-i18n="addExpenseTitle">Registrar Gasto</h3>
         <form id="form-gasto">
@@ -132,31 +135,31 @@
                 <select id="input-categoria"></select>
                 
                 <button type="button" id="btn-toggle-nueva-cat" class="btn-secundario btn-pequeno">✚ <span data-i18n="newCategory">Nueva Categoría</span></button>
-                <div id="area-nueva-categoria" class="transicion-seccion oculto" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 12px; margin-top: 5px;">
-                    <input type="text" id="input-nueva-cat-nombre" data-i18n-ph="catNamePlaceholder" placeholder="Nombre (ej: Gimnasio)" style="margin-bottom: 5px;">
-                    <input type="text" id="input-nueva-cat-emoji" data-i18n-ph="catEmojiPlaceholder" placeholder="Emoji (ej: 🏋️)" style="margin-bottom: 5px;" maxlength="2">
-                    <button type="button" id="btn-guardar-nueva-cat" class="btn-principal" data-i18n="btnSave" style="padding: 0.5rem; margin-bottom: 0;">Guardar</button>
+                <div id="area-nueva-categoria" class="nueva-cat-container transicion-seccion oculto">
+                    <input type="text" id="input-nueva-cat-nombre" data-i18n-ph="catNamePlaceholder" placeholder="Nombre (ej: Gimnasio)" class="mb-5">
+                    <input type="text" id="input-nueva-cat-emoji" data-i18n-ph="catEmojiPlaceholder" placeholder="Emoji (ej: 🏋️)" class="mb-5" maxlength="2">
+                    <button type="button" id="btn-guardar-nueva-cat" class="btn-principal mb-0" data-i18n="btnSave" style="padding: 0.5rem; margin-bottom: 0;">Guardar</button>
                 </div>
             </div>
             
             <button type="submit" id="btn-guardar-gasto" class="btn-principal" data-i18n="btnAdd">Agregar</button>
         </form>
 
-        <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 1.5rem 0;">
+        <hr class="divider">
 
         <h3 data-i18n="analysisTitle">Análisis del Mes</h3>
         <div class="cat-breakdown" id="grafico-categorias"></div>
 
         <h3 data-i18n="expensesMonth">Historial</h3>
         <ul class="log" id="lista-historial"></ul>
-        <button id="btn-abrir-simulador" class="btn-secundario" data-i18n="btnOpenLSim" style="margin-top: 15px; border-color: var(--primary-color);">🔮 Simulador LSim</button>
-        <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <button id="btn-exportar" class="btn-secundario" data-i18n="btnExport" style="margin-top: 0;">Exportar</button>
-            <button id="btn-importar" class="btn-secundario" data-i18n="btnImport" style="margin-top: 0;">Importar</button>
-            <input type="file" id="input-archivo" accept=".json" style="display:none;">
+        <button id="btn-abrir-simulador" class="btn-secundario btn-lsim" data-i18n="btnOpenLSim">🔮 Simulador LSim</button>
+        <div class="flex-gap-mt20">
+            <button id="btn-exportar" class="btn-secundario mb-0" data-i18n="btnExport" style="margin-top: 0;">Exportar</button>
+            <button id="btn-importar" class="btn-secundario mb-0" data-i18n="btnImport" style="margin-top: 0;">Importar</button>
+            <input type="file" id="input-archivo" accept=".json" class="hidden-file">
         </div>
         
-        <button id="btn-reiniciar" class="btn-secundario" style="width: 100%; margin: 10px 0 0 0; border-color: var(--danger-color); color: var(--danger-color);" data-i18n="btnReset">Borrar App</button>
+        <button id="btn-reiniciar" class="btn-secundario btn-danger-outline" data-i18n="btnReset">Borrar App</button>
     </section>
 </main>
 <script type="module" src="js/main.js"></script>

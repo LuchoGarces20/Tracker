@@ -1,3 +1,5 @@
+import { STORAGE_KEYS } from './store.js';
+
 export const diccionario = {
     es: {
         appTitle: "Floux - ", currencyLabel: "Moneda", tabDirect: "Ya sé mi presupuesto", tabCalc: "Ayúdame a calcular",
@@ -46,7 +48,7 @@ export const diccionario = {
     }
 };
 
-export let currentLang = localStorage.getItem('floux_lang');
+export let currentLang = localStorage.getItem(STORAGE_KEYS.LANG);
 
 if (!currentLang) {
     const userLocale = navigator.language || navigator.userLanguage; 
@@ -60,5 +62,5 @@ export function t(key) {
 
 export function setLangStr(newLang) {
     currentLang = newLang;
-    localStorage.setItem('floux_lang', currentLang);
+    localStorage.setItem(STORAGE_KEYS.LANG, currentLang);
 }
