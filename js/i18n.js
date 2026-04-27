@@ -3,8 +3,15 @@ import { STORAGE_KEYS } from './store.js';
 export const diccionario = {
     es: {
         appTitle: "Floux - ", currencyLabel: "Moneda", tabDirect: "Ya sé mi presupuesto", tabCalc: "Ayúdame a calcular",
-        budgetLabel: "Presupuesto Mensual", budgetPlaceholder: "Ej: 2000", incomeLabel: "Ingresos Totales",
-        fixedLabel: "Gastos Fijos", investLabel: "Inversiones", calcResult: "Presupuesto:",
+        budgetLabel: "Presupuesto Mensual", budgetPlaceholder: "Ej: 2000", 
+        incomeLabel: "Renta Mensual Total",
+        pctLongTerm: "Inversión Largo Plazo (%) - Rec: 20%",
+        pctShortTerm: "Inversión Corto Plazo (%) - Rec: 10%",
+        pctEdu: "Educación (%) - Rec: 5%",
+        pctSurvival: "Supervivencia (%) - Rec: 55%",
+        pctFree: "Gastos Libres (%) - Rec: 10%",
+        fixedPixLabel: "Renta comprometida (PIX/Transferencia)",
+        calcResult: "Valor seguro para gastar:",
         spentLabel: "¿Ya gastaste algo?", btnStart: "Guardar y Continuar", limitToday: "Tu límite de hoy",
         remainsMonth: "Restante", spentMonth: "Gastado",
         addExpenseTitle: "Registrar Gasto", amountPlaceholder: "Monto", descPlaceholder: "Descripción",
@@ -14,12 +21,20 @@ export const diccionario = {
         cat_transporte: "Transporte", cat_supermercado: "Super", cat_cuentas: "Cuentas",
         cat_ocio: "Ocio", cat_otros: "Otros", newCategory: "Nueva Categoría", catNamePlaceholder: "Nombre (ej: Gimnasio)",
         catEmojiPlaceholder: "Emoji (ej: 🏋️)", btnSave: "Guardar", errorBudget: "Por favor ingresa un presupuesto mayor a 0.",
-        lsimTitle: "LSim - Pérdida Invisible", lsimDesc: "Evalúa el costo de oportunidad de compras mayores.", lsimAmount: "Costo de la Compra", lsimYears: "Años proyectados", lsimRate: "Rendimiento Anual (%)", lsimResult: "Pérdida Invisible (Capital Perdido):", btnOpenLSim: "🔮 Simulador LSim", btnClose: "Cerrar"
+        lsimTitle: "LSim - Pérdida Invisible", lsimDesc: "Evalúa el costo de oportunidad de compras mayores.", lsimAmount: "Costo de la Compra", lsimYears: "Años proyectados", lsimRate: "Rendimiento Anual (%)", lsimResult: "Pérdida Invisible (Capital Perdido):", btnOpenLSim: "🔮 Simulador LSim", btnClose: "Cerrar",
+        summaryTitle: "Resumen del Mes", summaryPerf: "Rendimiento:", summaryGreatest: "Gasto Mayor:", summaryDaily: "Promedio Diario:", summarySave: "Ahorro: ", summaryDeficit: "Déficit: "
     },
     en: {
-        appTitle: "Floux - ", currencyLabel: "Currency", tabDirect: "I know my budget", tabCalc: "Calculate",
-        budgetLabel: "Monthly Budget", budgetPlaceholder: "E.g. 2000", incomeLabel: "Income",
-        fixedLabel: "Fixed Expenses", investLabel: "Investments", calcResult: "Budget:",
+        appTitle: "Floux - ", currencyLabel: "Currency", tabDirect: "I know my budget", tabCalc: "Help me calculate",
+        budgetLabel: "Monthly Budget", budgetPlaceholder: "E.g. 2000", 
+        incomeLabel: "Total Monthly Income",
+        pctLongTerm: "Long Term Investment (%) - Rec: 20%",
+        pctShortTerm: "Short Term Investment (%) - Rec: 10%",
+        pctEdu: "Education (%) - Rec: 5%",
+        pctSurvival: "Survival (%) - Rec: 55%",
+        pctFree: "Free to Spend (%) - Rec: 10%",
+        fixedPixLabel: "Committed Income (Bank Transfer/Cash)",
+        calcResult: "Safe value to spend:",
         spentLabel: "Already spent?", btnStart: "Save and Continue", limitToday: "Today's Limit",
         remainsMonth: "Remaining", spentMonth: "Spent",
         addExpenseTitle: "Log Expense", amountPlaceholder: "Amount", descPlaceholder: "Description",
@@ -29,12 +44,20 @@ export const diccionario = {
         cat_transporte: "Transport", cat_supermercado: "Groceries", cat_cuentas: "Bills",
         cat_ocio: "Leisure", cat_otros: "Others", newCategory: "New Category", catNamePlaceholder: "Name (e.g., Gym)",
         catEmojiPlaceholder: "Emoji (e.g., 🏋️)", btnSave: "Save", errorBudget: "Please enter a budget greater than 0.",
-        lsimTitle: "LSim - Invisible Loss", lsimDesc: "Evaluate the opportunity cost of major purchases.", lsimAmount: "Purchase Cost", lsimYears: "Projected Years", lsimRate: "Annual Return Rate (%)", lsimResult: "Invisible Loss (Opportunity Cost):", btnOpenLSim: "🔮 LSim Simulator", btnClose: "Close"
+        lsimTitle: "LSim - Invisible Loss", lsimDesc: "Evaluate the opportunity cost of major purchases.", lsimAmount: "Purchase Cost", lsimYears: "Projected Years", lsimRate: "Annual Return Rate (%)", lsimResult: "Invisible Loss (Opportunity Cost):", btnOpenLSim: "🔮 LSim Simulator", btnClose: "Close",
+        summaryTitle: "Monthly Summary", summaryPerf: "Performance:", summaryGreatest: "Largest Expense:", summaryDaily: "Daily Average:", summarySave: "Saved: ", summaryDeficit: "Deficit: "
     },
     pt: {
-        appTitle: "Floux - ", currencyLabel: "Moeda", tabDirect: "Já sei meu orçamento", tabCalc: "Calcular",
-        budgetLabel: "Orçamento Mensal", budgetPlaceholder: "Ex: 2000", incomeLabel: "Renda Total",
-        fixedLabel: "Despesas Fixas", investLabel: "Investimentos", calcResult: "Orçamento:",
+        appTitle: "Floux - ", currencyLabel: "Moeda", tabDirect: "Já sei meu orçamento", tabCalc: "Me ajuda calcular",
+        budgetLabel: "Orçamento Mensal", budgetPlaceholder: "Ex: 2000", 
+        incomeLabel: "Renda Mensal Total",
+        pctLongTerm: "Investimento Longo Prazo (%) - Rec: 20%",
+        pctShortTerm: "Investimento Curto Prazo (%) - Rec: 10%",
+        pctEdu: "Educação (%) - Rec: 5%",
+        pctSurvival: "Sobrevivência (%) - Rec: 55%",
+        pctFree: "Gastos Livres (%) - Rec: 10%",
+        fixedPixLabel: "Renda comprometida (PIX/Boleto)",
+        calcResult: "Valor seguro para gastar:",
         spentLabel: "Já gastou algo?", btnStart: "Salvar e Continuar", limitToday: "Limite de hoje",
         remainsMonth: "Restante", spentMonth: "Gasto",
         addExpenseTitle: "Registrar Despesa", amountPlaceholder: "Valor", descPlaceholder: "Descrição",
@@ -44,7 +67,8 @@ export const diccionario = {
         cat_transporte: "Transporte", cat_supermercado: "Mercado", cat_cuentas: "Contas",
         cat_ocio: "Lazer", cat_otros: "Outros", newCategory: "Nova Categoria", catNamePlaceholder: "Nome (ex: Academia)",
         catEmojiPlaceholder: "Emoji (ex: 🏋️)", btnSave: "Salvar", errorBudget: "Por favor, insira um orçamento maior que 0.",
-        lsimTitle: "LSim - Perda Invisível", lsimDesc: "Avalie o custo de oportunidade de grandes compras.", lsimAmount: "Custo da Compra", lsimYears: "Anos Projetados", lsimRate: "Taxa de Retorno Anual (%)", lsimResult: "Perda Invisível (Capital Perdido):", btnOpenLSim: "🔮 Simulador LSim", btnClose: "Fechar"
+        lsimTitle: "LSim - Perda Invisível", lsimDesc: "Avalie o custo de oportunidade de grandes compras.", lsimAmount: "Custo da Compra", lsimYears: "Anos Projetados", lsimRate: "Taxa de Retorno Anual (%)", lsimResult: "Perda Invisível (Capital Perdido):", btnOpenLSim: "🔮 Simulador LSim", btnClose: "Fechar",
+        summaryTitle: "Resumo do Mês", summaryPerf: "Desempenho:", summaryGreatest: "Maior Despesa:", summaryDaily: "Média Diária:", summarySave: "Economia: ", summaryDeficit: "Déficit: "
     }
 };
 

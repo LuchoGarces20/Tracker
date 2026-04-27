@@ -9,13 +9,17 @@ const hoy = new Date();
 const mesActual = hoy.getMonth();
 const añoActual = hoy.getFullYear();
 
+let viewMonth = mesActual;
+let viewYear = añoActual;
+
 let modoActual = 'directo';
 let presupuestoCalculadoTemporalCents = 0;
 
 // Cached DOM Elements
 const inputIngresos = document.getElementById('input-ingresos');
 const inputFijos = document.getElementById('input-fijos');
-const inputInversiones = document.getElementById('input-inversiones');
+const inputPctViver = document.getElementById('input-pct-viver');
+const inputPctLivre = document.getElementById('input-pct-livre');
 const displayCalculado = document.getElementById('display-calculado');
 const inputMoneda = document.getElementById('input-moneda');
 const inputPresupuesto = document.getElementById('input-presupuesto');
@@ -48,7 +52,12 @@ function mostrarPantallaPrincipal() {
     document.getElementById('pantalla-configuracion').classList.add('oculto');
     document.getElementById('pantalla-principal').classList.remove('oculto');
     document.getElementById('btn-editar-presupuesto').classList.remove('oculto');
-    actualizarInterfaz(state, mesActual, añoActual, hoy);
+    
+    viewMonth = hoy.getMonth();
+    viewYear = hoy.getFullYear();
+    document.getElementById('btn-next-month').disabled = true;
+
+    actualizarInterfaz(state, viewMonth, viewYear, hoy);
 }
 
 function guardarYMostrar() {
@@ -56,7 +65,24 @@ function guardarYMostrar() {
     mostrarPantallaPrincipal();
 }
 
-// Event Listeners - Navigation & Setup
+// Event Listeners - Navigation Controls
+document.getElementById('btn-prev-month').addEventListener('click', () => {
+    viewMonth--;
+    if (viewMonth < 0) { viewMonth = 11; viewYear--; }
+    document.getElementById('btn-next-month').disabled = false;
+    actualizarInterfaz(state, viewMonth, viewYear, hoy);
+});
+
+document.getElementById('btn-next-month').addEventListener('click', () => {
+    viewMonth++;
+    if (viewMonth > 11) { viewMonth = 0; viewYear++; }
+    if (viewMonth === hoy.getMonth() && viewYear === hoy.getFullYear()) {
+        document.getElementById('btn-next-month').disabled = true;
+    }
+    actualizarInterfaz(state, viewMonth, viewYear, hoy);
+});
+
+// Event Listeners - Setup & Config
 document.getElementById('lang-container').addEventListener('click', (e) => {
     if (e.target.classList.contains('flag')) {
         setLangStr(e.target.getAttribute('data-lang'));
@@ -65,7 +91,7 @@ document.getElementById('lang-container').addEventListener('click', (e) => {
         aplicarTraduccion(gastoEnEdicion);
         renderizarSelectCategorias(state.categoriasCustom);
         if(!document.getElementById('pantalla-principal').classList.contains('oculto')) {
-            actualizarInterfaz(state, mesActual, añoActual, hoy);
+            actualizarInterfaz(state, viewMonth, viewYear, hoy);
         }
     }
 });
@@ -87,11 +113,15 @@ tabCalc.addEventListener('click', () => {
 
 document.querySelectorAll('.input-calc').forEach(input => {
     input.addEventListener('input', () => {
-        const i = Math.round((parseFloat(inputIngresos.value) || 0) * 100);
-        const f = Math.round((parseFloat(inputFijos.value) || 0) * 100);
-        const v = Math.round((parseFloat(inputInversiones.value) || 0) * 100);
+        const rentaCents = Math.round((parseFloat(inputIngresos?.value) || 0) * 100);
+        const fixosCents = Math.round((parseFloat(inputFijos?.value) || 0) * 100);
+        const pctViver = parseFloat(inputPctViver?.value) || 0;
+        const pctLivre = parseFloat(inputPctLivre?.value) || 0;
+        const porcentajeLiquidez = (pctViver + pctLivre) / 100;
+        const liquidezTotalCents = Math.round(rentaCents * porcentajeLiquidez);
+        
+        presupuestoCalculadoTemporalCents = Math.max(0, liquidezTotalCents - fixosCents);
 
-        presupuestoCalculadoTemporalCents = Math.max(0, i - f - v);
         const localeStr = currentLang === 'es' ? 'es-ES' : (currentLang === 'pt' ? 'pt-BR' : 'en-US');
         displayCalculado.innerText = new Intl.NumberFormat(localeStr, { style: 'currency', currency: inputMoneda.value }).format(presupuestoCalculadoTemporalCents / 100);
     });
@@ -115,7 +145,7 @@ document.getElementById('btn-comenzar').addEventListener('click', () => {
         if (inicialCents > 0) state.historialGlobal.push({ id: Date.now(), monto: inicialCents, desc: t('prevExpense'), fecha: new Date().toISOString(), categoria: 'otros_previo' });
     }
 
-    localStorage.setItem(STORAGE_KEYS.MES_GUARDADO, mesActual); 
+    localStorage.setItem(STORAGE_KEYS.MES_GUARDADO, hoy.getMonth()); 
     guardarYMostrar();
 });
 

@@ -4,18 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Floux</title>
+    <link rel="icon" type="image/svg+xml" href="img/logo-floux.svg">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <main id="app-movil">
   <div class="header-app">
     <div class="brand-title">
-        <img src="img/gemini-svg-3.svg" alt="Floux" class="logo-light">
-        <img src="img/gemini-svg-4.svg" alt="Floux" class="logo-dark">
+        <img src="img/logo-light.svg" alt="Floux" class="logo-light">
+        <img src="img/logo-dark.svg" alt="Floux" class="logo-dark">
     </div>
     <div class="header-actions">
         <div class="lang-flags" id="lang-container">
-            <span class="flag active" data-lang="es" title="Español">🇪🇸</span>
+            <span class="flag" data-lang="es" title="Español">🇪🇸</span>
             <span class="flag" data-lang="en" title="English">🇺🇸</span>
             <span class="flag" data-lang="pt" title="Português">🇧🇷</span>
         </div>
@@ -72,24 +73,44 @@
             </div>
         </div>
 
-        <div id="modo-calculadora" class="transicion-seccion oculto">
-            <div class="form-group">
-                <label data-i18n="incomeLabel">Ingresos Totales</label>
-                <input type="number" id="input-ingresos" placeholder="Ej: 5000" inputmode="decimal" class="input-calc">
-            </div>
-            <div class="form-group">
-                <label data-i18n="fixedLabel">Gastos Fijos</label>
-                <input type="number" id="input-fijos" placeholder="Ej: 2000" inputmode="decimal" class="input-calc">
-            </div>
-            <div class="form-group">
-                <label data-i18n="investLabel">Inversiones Fijas</label>
-                <input type="number" id="input-inversiones" placeholder="Ej: 500" inputmode="decimal" class="input-calc">
-            </div>
-            <div class="calc-result">
-                <span data-i18n="calcResult">Presupuesto Calculado:</span>
-                <strong id="display-calculado">0.00</strong>
-            </div>
-        </div>
+<div id="modo-calculadora" class="transicion-seccion oculto">
+    <div class="form-group">
+        <label data-i18n="incomeLabel">Renta Mensual Total</label>
+        <input type="number" id="input-ingresos" placeholder="Ej: 5000" inputmode="decimal" class="input-calc">
+    </div>
+    
+    <div class="form-group">
+        <label data-i18n="pctLongTerm">Inversión Largo Plazo (%) - Rec: 20%</label>
+        <input type="number" id="input-pct-largo" value="20" inputmode="decimal" class="input-calc">
+    </div>
+    <div class="form-group">
+        <label data-i18n="pctShortTerm">Inversión Corto Plazo (%) - Rec: 10%</label>
+        <input type="number" id="input-pct-corto" value="10" inputmode="decimal" class="input-calc">
+    </div>
+    <div class="form-group">
+        <label data-i18n="pctEdu">Educación (%) - Rec: 5%</label>
+        <input type="number" id="input-pct-edu" value="5" inputmode="decimal" class="input-calc">
+    </div>
+    
+    <div class="form-group">
+        <label data-i18n="pctSurvival">Supervivencia (%) - Rec: 55%</label>
+        <input type="number" id="input-pct-viver" value="55" inputmode="decimal" class="input-calc">
+    </div>
+    <div class="form-group">
+        <label data-i18n="pctFree">Gastos Libres (%) - Rec: 10%</label>
+        <input type="number" id="input-pct-livre" value="10" inputmode="decimal" class="input-calc">
+    </div>
+
+    <div class="form-group">
+        <label data-i18n="fixedPixLabel">Renta comprometida (PIX/Boleto)</label>
+        <input type="number" id="input-fijos" placeholder="Ej: 1500" inputmode="decimal" class="input-calc">
+    </div>
+
+    <div class="calc-result">
+        <span data-i18n="calcResult">Valor seguro para gastar:</span>
+        <strong id="display-calculado">0.00</strong>
+    </div>
+</div>
 
         <div class="form-group transicion-seccion oculto" id="area-gastos-previos">
             <label data-i18n="spentLabel">¿Ya gastaste algo este mes?</label>
@@ -100,9 +121,15 @@
 
     <section id="pantalla-principal" class="transicion-seccion oculto">
         
+        <div class="month-navigation" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <button id="btn-prev-month" class="btn-secundario btn-pequeno" style="width: auto; margin: 0;">⬅️</button>
+            <h3 id="display-current-month" style="margin: 0; font-size: 1.1rem; color: var(--text-color);">Mes</h3>
+            <button id="btn-next-month" class="btn-secundario btn-pequeno" style="width: auto; margin: 0;" disabled>➡️</button>
+        </div>
+
         <div class="grid-balances">
             <div class="balance-card highlight">
-                <span class="b-title" data-i18n="limitToday">Tu límite de hoy</span>
+                <span class="b-title" id="titulo-limite-hoy" data-i18n="limitToday">Tu límite de hoy</span>
                 <span class="b-amount" id="display-diario">0.00</span>
             </div>
             
@@ -120,32 +147,49 @@
             </div>
         </div>
 
+        <div id="resumen-mes-pasado" class="summary-card transicion-seccion oculto">
+            <h4 data-i18n="summaryTitle">Resumen del Mes</h4>
+            <div class="summary-row">
+                <span class="summary-label" data-i18n="summaryPerf">Rendimiento:</span>
+                <span class="summary-value" id="summary-performance"></span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label" data-i18n="summaryGreatest">Gasto Mayor:</span>
+                <span class="summary-value" id="summary-largest"></span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label" data-i18n="summaryDaily">Promedio Diario:</span>
+                <span class="summary-value" id="summary-daily"></span>
+            </div>
+        </div>
+
         <hr class="divider">
 
-        <h3 data-i18n="addExpenseTitle">Registrar Gasto</h3>
-        <form id="form-gasto">
-            <div class="form-group">
-                <input type="number" id="input-monto" data-i18n-ph="amountPlaceholder" placeholder="Monto" step="0.01" required inputmode="decimal">
-            </div>
-            <div class="form-group">
-                <input type="text" id="input-desc" data-i18n-ph="descPlaceholder" placeholder="Descripción" required>
-            </div>
-            
-            <div class="form-group">
-                <select id="input-categoria"></select>
-                
-                <button type="button" id="btn-toggle-nueva-cat" class="btn-secundario btn-pequeno">✚ <span data-i18n="newCategory">Nueva Categoría</span></button>
-                <div id="area-nueva-categoria" class="nueva-cat-container transicion-seccion oculto">
-                    <input type="text" id="input-nueva-cat-nombre" data-i18n-ph="catNamePlaceholder" placeholder="Nombre (ej: Gimnasio)" class="mb-5">
-                    <input type="text" id="input-nueva-cat-emoji" data-i18n-ph="catEmojiPlaceholder" placeholder="Emoji (ej: 🏋️)" class="mb-5" maxlength="2">
-                    <button type="button" id="btn-guardar-nueva-cat" class="btn-principal mb-0" data-i18n="btnSave" style="padding: 0.5rem; margin-bottom: 0;">Guardar</button>
+        <div id="area-registrar-gasto" class="transicion-seccion">
+            <h3 data-i18n="addExpenseTitle">Registrar Gasto</h3>
+            <form id="form-gasto">
+                <div class="form-group">
+                    <input type="number" id="input-monto" data-i18n-ph="amountPlaceholder" placeholder="Monto" step="0.01" required inputmode="decimal">
                 </div>
-            </div>
-            
-            <button type="submit" id="btn-guardar-gasto" class="btn-principal" data-i18n="btnAdd">Agregar</button>
-        </form>
-
-        <hr class="divider">
+                <div class="form-group">
+                    <input type="text" id="input-desc" data-i18n-ph="descPlaceholder" placeholder="Descripción" required>
+                </div>
+                
+                <div class="form-group">
+                    <select id="input-categoria"></select>
+                    
+                    <button type="button" id="btn-toggle-nueva-cat" class="btn-secundario btn-pequeno">✚ <span data-i18n="newCategory">Nueva Categoría</span></button>
+                    <div id="area-nueva-categoria" class="nueva-cat-container transicion-seccion oculto">
+                        <input type="text" id="input-nueva-cat-nombre" data-i18n-ph="catNamePlaceholder" placeholder="Nombre (ej: Gimnasio)" class="mb-5">
+                        <input type="text" id="input-nueva-cat-emoji" data-i18n-ph="catEmojiPlaceholder" placeholder="Emoji (ej: 🏋️)" class="mb-5" maxlength="2">
+                        <button type="button" id="btn-guardar-nueva-cat" class="btn-principal mb-0" data-i18n="btnSave" style="padding: 0.5rem; margin-bottom: 0;">Guardar</button>
+                    </div>
+                </div>
+                
+                <button type="submit" id="btn-guardar-gasto" class="btn-principal" data-i18n="btnAdd">Agregar</button>
+            </form>
+            <hr class="divider">
+        </div>
 
         <h3 data-i18n="analysisTitle">Análisis del Mes</h3>
         <div class="cat-breakdown" id="grafico-categorias"></div>

@@ -35,15 +35,61 @@ export function renderizarSelectCategorias(customCats) {
     if(currentValue && categorias.find(c => c.id === currentValue)) select.value = currentValue;
 }
 
-export function actualizarInterfaz(state, mesActual, añoActual, hoy) {
+export function actualizarInterfaz(state, viewMonth, viewYear, hoy) {
     const localeStr = currentLang === 'es' ? 'es-ES' : (currentLang === 'pt' ? 'pt-BR' : 'en-US');
     const formatoDinero = new Intl.NumberFormat(localeStr, { style: 'currency', currency: state.monedaActual });
     
-    const gastosMesActual = state.historialGlobal.filter(g => new Date(g.fecha).getMonth() === mesActual && new Date(g.fecha).getFullYear() === añoActual);
+    const tituloLimite = document.getElementById('titulo-limite-hoy');
+    if (tituloLimite) {
+        const fechaFormateada = hoy.toLocaleDateString(localeStr, { weekday: 'short', day: 'numeric', month: 'short' });
+        tituloLimite.innerText = `${t('limitToday')} - ${fechaFormateada}`;
+    }
+
+    const dateForDisplay = new Date(viewYear, viewMonth, 1);
+    const displayMonthEl = document.getElementById('display-current-month');
+    if (displayMonthEl) {
+        displayMonthEl.innerText = dateForDisplay.toLocaleDateString(localeStr, { month: 'long', year: 'numeric' }).toUpperCase();
+    }
+
+    const gastosMesActual = state.historialGlobal.filter(g => new Date(g.fecha).getMonth() === viewMonth && new Date(g.fecha).getFullYear() === viewYear);
     
     const totalGastadoMesCents = gastosMesActual.reduce((acc, g) => acc + g.monto, 0);
     const dineroRestanteCents = state.presupuestoMensual - totalGastadoMesCents;
-    const diasRestantes = (new Date(añoActual, mesActual + 1, 0).getDate() - hoy.getDate()) + 1;
+    
+    const isCurrentMonth = (viewMonth === hoy.getMonth() && viewYear === hoy.getFullYear());
+    const areaRegistro = document.getElementById('area-registrar-gasto');
+    const areaResumen = document.getElementById('resumen-mes-pasado');
+    const cardDiario = document.querySelector('.balance-card.highlight');
+
+    if (isCurrentMonth) {
+        if(areaRegistro) areaRegistro.classList.remove('oculto');
+        if(areaResumen) areaResumen.classList.add('oculto');
+        if(cardDiario) cardDiario.style.display = 'block';
+    } else {
+        if(areaRegistro) areaRegistro.classList.add('oculto');
+        if(areaResumen) areaResumen.classList.remove('oculto');
+        if(cardDiario) cardDiario.style.display = 'none';
+
+        if (areaResumen) {
+            const perfEl = document.getElementById('summary-performance');
+            if (dineroRestanteCents >= 0) {
+                perfEl.innerText = `${t('summarySave')}${formatoDinero.format(dineroRestanteCents / 100)}`;
+                perfEl.style.color = 'var(--success-color)';
+            } else {
+                perfEl.innerText = `${t('summaryDeficit')}${formatoDinero.format(Math.abs(dineroRestanteCents) / 100)}`;
+                perfEl.style.color = 'var(--danger-color)';
+            }
+
+            const largest = gastosMesActual.length > 0 ? Math.max(...gastosMesActual.map(g => g.monto)) : 0;
+            document.getElementById('summary-largest').innerText = formatoDinero.format(largest / 100);
+
+            const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+            const dailyAvg = totalGastadoMesCents / daysInMonth;
+            document.getElementById('summary-daily').innerText = formatoDinero.format(dailyAvg / 100);
+        }
+    }
+
+    const diasRestantes = (new Date(viewYear, viewMonth + 1, 0).getDate() - hoy.getDate()) + 1;
     const presupuestoDiarioCents = Math.max(0, Math.floor(dineroRestanteCents / diasRestantes));
     
     const elDiario = document.getElementById('display-diario');
@@ -51,20 +97,20 @@ export function actualizarInterfaz(state, mesActual, añoActual, hoy) {
     const elGastado = document.getElementById('display-gastado');
     const barraFill = document.getElementById('progreso-mensual-fill');
 
-    elDiario.innerText = formatoDinero.format(presupuestoDiarioCents / 100);
-    elMensual.innerText = formatoDinero.format(dineroRestanteCents / 100);
-    elGastado.innerText = formatoDinero.format(totalGastadoMesCents / 100);
+    if (elDiario) elDiario.innerText = formatoDinero.format(presupuestoDiarioCents / 100);
+    if (elMensual) elMensual.innerText = formatoDinero.format(dineroRestanteCents / 100);
+    if (elGastado) elGastado.innerText = formatoDinero.format(totalGastadoMesCents / 100);
 
     let porcentajeGastado = (totalGastadoMesCents / state.presupuestoMensual) * 100;
     if (porcentajeGastado > 100 || isNaN(porcentajeGastado)) porcentajeGastado = 100;
-    barraFill.style.width = `${porcentajeGastado}%`;
+    if (barraFill) barraFill.style.width = `${porcentajeGastado}%`;
     
     if (dineroRestanteCents < (state.presupuestoMensual * WARNING_THRESHOLD)) { 
-        barraFill.classList.add('warning'); 
-        elDiario.style.color = "var(--danger-color)"; 
+        if(barraFill) barraFill.classList.add('warning'); 
+        if(elDiario) elDiario.style.color = "var(--danger-color)"; 
     } else { 
-        barraFill.classList.remove('warning'); 
-        elDiario.style.color = "var(--primary-color)"; 
+        if(barraFill) barraFill.classList.remove('warning'); 
+        if(elDiario) elDiario.style.color = "var(--primary-color)"; 
     }
 
     const contGrafico = document.getElementById('grafico-categorias');
@@ -123,8 +169,7 @@ export function actualizarInterfaz(state, mesActual, añoActual, hoy) {
                 </div>
                 <div class="actions-row">
                     <span class="expense-amount" style="margin-right: 8px;">${escapeHTML(formatoDinero.format(g.monto / 100))}</span>
-                    <button class="edit-btn" data-id="${g.id}">✏️</button>
-                    <button class="delete-btn" data-id="${g.id}">✕</button>
+                    ${isCurrentMonth ? `<button class="edit-btn" data-id="${g.id}">✏️</button><button class="delete-btn" data-id="${g.id}">✕</button>` : ''}
                 </div>
             `;
             fragList.appendChild(li);
