@@ -28,7 +28,7 @@ body {
     display: flex; 
     justify-content: center; 
     font-weight: 400; 
-    overscroll-behavior-y: none;
+    overscroll-behavior-y: none; 
 }
 
 #app-movil { 
@@ -39,7 +39,7 @@ body {
     padding: calc(2rem + env(safe-area-inset-top)) calc(2rem + env(safe-area-inset-right)) calc(2rem + env(safe-area-inset-bottom)) calc(2rem + env(safe-area-inset-left)); 
     box-sizing: border-box; 
     box-shadow: 0 4px 20px var(--shadow-color); 
-    -webkit-overflow-scrolling: touch;
+    -webkit-overflow-scrolling: touch; 
 }
 
 /* --- Novo Layout do Header (Grid) --- */
@@ -57,7 +57,6 @@ body {
     z-index: 100;
     border-bottom: 1px solid var(--border-color);
 }
-
 .action-left { justify-self: start; margin-left: 0; }
 .action-right { justify-self: end; margin-left: 0; }
 
@@ -169,7 +168,6 @@ body {
 }
 
 h1 { margin: 0; font-size: 1.6rem; font-weight: 700; }
-
 .btn-icono { 
     background: none; 
     border: none; 
@@ -180,8 +178,7 @@ h1 { margin: 0; font-size: 1.6rem; font-weight: 700; }
     transition: transform 0.2s ease, max-width 0.4s ease; 
     max-width: 50px; 
     overflow: hidden; 
-}
-
+} 
 .btn-icono.oculto {
     max-width: 0;
 }
@@ -192,6 +189,7 @@ h3 { font-size: 1.2rem; margin-bottom: 1rem; color: var(--primary-color); paddin
     transition: opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease;
     opacity: 1; transform: translateY(0); max-height: 2500px; overflow: hidden;
 }
+
 .oculto { 
     opacity: 0; transform: translateY(10px); max-height: 0; pointer-events: none; margin: 0 !important; padding: 0 !important; border: none !important;
 }
@@ -209,7 +207,15 @@ h3 { font-size: 1.2rem; margin-bottom: 1rem; color: var(--primary-color); paddin
 .b-amount { font-size: 1.5rem; font-weight: 700; color: var(--text-color); font-variant-numeric: tabular-nums; }
 .highlight .b-amount { font-size: 2.8rem; color: var(--primary-color); font-weight: 800; }
 
-.custom-progress { width: 100%; height: 12px; background-color: var(--border-color); border-radius: 6px; margin-top: 10px; overflow: hidden; }
+.custom-progress { 
+    width: 100%; 
+    height: 6px; 
+    opacity: 0.7;
+    background-color: var(--border-color); 
+    border-radius: 6px; 
+    margin-top: 10px; 
+    overflow: hidden; 
+}
 .custom-progress-fill { height: 100%; background-color: var(--success-color); border-radius: 6px; width: 0%; transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease; }
 .custom-progress-fill.warning { background-color: var(--danger-color); }
 
@@ -229,10 +235,10 @@ button.btn-principal:active { opacity: 0.7; }
 .expense-date { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
 .expense-amount { font-weight: 700; font-size: 1.1rem; font-variant-numeric: tabular-nums;}
 .cat-icon { font-size: 1.5rem; width: 35px; text-align: center; }
-
 .delete-btn { background-color: var(--danger-color); color: white; border: none; width: auto; padding: 0.4rem 0.8rem; font-size: 0.8rem; margin: 0 0 0 0.5rem; border-radius: 8px; cursor: pointer;}
 .edit-btn { background-color: var(--primary-color); color: white; border: none; width: auto; padding: 0.4rem 0.8rem; font-size: 0.8rem; margin: 0 0 0 0.5rem; border-radius: 8px; cursor: pointer;}
 .actions-row { display: flex; align-items: center; }
+
 .btn-secundario { background-color: transparent; border: 2px solid var(--border-color); color: var(--primary-color); width: 100%; padding: 1rem; border-radius: 12px; font-weight: 700; cursor: pointer; margin-top: 10px; transition: background-color 0.2s, border-color 0.2s, opacity 0.2s;}
 .btn-secundario:hover { border-color: var(--primary-color); background-color: var(--primary-gradient); }
 .btn-secundario:active { opacity: 0.7; }
@@ -276,13 +282,8 @@ button.btn-principal:active { opacity: 0.7; }
     }
     
     .header-app { background: rgba(30, 41, 59, 0.85); }
-
-    .logo-light { 
-        display: none; 
-    }
-    .logo-dark { 
-        display: block; 
-    }
+    .logo-light { display: none; }
+    .logo-dark { display: block; }
 }
 
 /* Summary Card Styles */
@@ -319,7 +320,6 @@ button.btn-principal:active { opacity: 0.7; }
 }
 
 /* --- UI/UX Enhancements --- */
-
 /* Input Validation */
 input:not(:placeholder-shown):invalid {
     border-color: var(--danger-color);
@@ -373,7 +373,6 @@ input:not(:placeholder-shown):focus:invalid {
 }
 
 /* --- LSim Visual Updates --- */
-
 .input-destacado {
     font-size: 1.5rem;
     font-weight: 700;
@@ -381,7 +380,6 @@ input:not(:placeholder-shown):focus:invalid {
     color: var(--primary-color);
     padding: 1rem;
 }
-
 .lsim-slider-group {
     background: var(--surface-color);
     padding: 15px;
@@ -389,7 +387,6 @@ input:not(:placeholder-shown):focus:invalid {
     border: 1px solid var(--border-color);
     margin-bottom: 15px;
 }
-
 .lsim-badge {
     background: var(--primary-gradient);
     color: var(--primary-color);
@@ -399,14 +396,12 @@ input:not(:placeholder-shown):focus:invalid {
     font-size: 0.9rem;
     font-variant-numeric: tabular-nums;
 }
-
 .lsim-helper {
     font-size: 0.75rem;
     color: var(--text-muted);
     margin-top: 8px;
     display: block;
 }
-
 .input-slider {
     -webkit-appearance: none;
     appearance: none;
@@ -414,11 +409,9 @@ input:not(:placeholder-shown):focus:invalid {
     background: transparent;
     margin: 15px 0;
 }
-
 .input-slider:focus {
     outline: none;
 }
-
 /* --- WebKit (Chrome, Safari, iOS) --- */
 .input-slider::-webkit-slider-runnable-track {
     width: 100%;
@@ -427,7 +420,6 @@ input:not(:placeholder-shown):focus:invalid {
     background: linear-gradient(to right, var(--primary-color) var(--fill, 50%), var(--border-color) var(--fill, 50%));
     border-radius: 4px;
 }
-
 .input-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
@@ -440,7 +432,6 @@ input:not(:placeholder-shown):focus:invalid {
     box-shadow: 0 2px 5px rgba(0,0,0,0.15), 0 0 1px rgba(0,0,0,0.1); 
     border: none; 
 }
-
 /* --- Firefox --- */
 .input-slider::-moz-range-track {
     width: 100%;
@@ -449,13 +440,11 @@ input:not(:placeholder-shown):focus:invalid {
     background: var(--border-color);
     border-radius: 4px;
 }
-
 .input-slider::-moz-range-progress {
     background-color: var(--primary-color);
     height: 8px;
     border-radius: 4px;
 }
-
 .input-slider::-moz-range-thumb {
     height: 20px;
     width: 32px;
@@ -474,19 +463,16 @@ input:not(:placeholder-shown):focus:invalid {
     box-shadow: 0 4px 6px -1px var(--shadow-color), 0 2px 4px -2px var(--shadow-color);
     margin-top: 20px;
 }
-
 .lsim-bar-row {
     display: flex;
     flex-direction: column;
     gap: 5px;
 }
-
 .lsim-bar-label {
     font-size: 0.85rem;
     font-weight: 600;
     color: var(--text-color);
 }
-
 .lsim-bar-track {
     width: 100%;
     height: 12px;
@@ -494,28 +480,23 @@ input:not(:placeholder-shown):focus:invalid {
     border-radius: 6px;
     overflow: hidden;
 }
-
 .lsim-bar-fill {
     height: 100%;
     border-radius: 6px;
     transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
 .lsim-bar-fill.cost { background-color: var(--text-muted); }
 .lsim-bar-fill.future { background-color: var(--danger-color); }
-
 .lsim-bar-val {
     font-weight: 700;
     text-align: right;
     font-variant-numeric: tabular-nums;
     font-size: 0.9rem;
 }
-
 .lsim-bar-val.highlight {
     color: var(--danger-color);
     font-size: 1.1rem;
 }
-
 .lsim-summary-loss {
     margin-top: 20px;
     padding-top: 15px;
@@ -524,7 +505,6 @@ input:not(:placeholder-shown):focus:invalid {
     font-size: 0.95rem;
     color: var(--text-muted);
 }
-
 .lsim-summary-loss strong {
     color: var(--danger-color);
     font-size: 1.2rem;
@@ -532,31 +512,32 @@ input:not(:placeholder-shown):focus:invalid {
     margin: 8px 0;
 }
 
-/* Idea 9: Pace Sparkline */
+/* Pace Sparkline */
 .pace-label { 
     font-size: 0.65rem; 
     color: var(--text-muted); 
-    text-transform: uppercase; 
+    text-transform: none; 
     margin-top: 8px; 
     display: block; 
-    letter-spacing: 0.5px;
+    letter-spacing: 0.5px; 
 }
 .pace-sparkline-container { 
     width: 100%; 
-    height: 4px; 
+    height: 2px; 
+    opacity: 0.5;
     background: var(--border-color); 
     border-radius: 2px; 
     margin-top: 4px; 
     overflow: hidden; 
-}
+} 
 .pace-sparkline-fill { 
     height: 100%; 
     transition: width 0.5s, background-color 0.3s; 
-}
+} 
 .pace-sparkline-fill.good { background: var(--success-color); }
 .pace-sparkline-fill.bad { background: var(--danger-color); }
 
-/* Idea 10: Zero-Spend Badge */
+/* Zero-Spend Badge */
 .zero-spend-badge { 
     font-size: 0.75rem; 
     color: #F59E0B; 
@@ -567,21 +548,14 @@ input:not(:placeholder-shown):focus:invalid {
     display: inline-block; 
     margin-left: 8px; 
     border: 1px solid rgba(245, 158, 11, 0.2); 
-}
+} 
 
 /* --- Modo Privacidade --- */
 .b-amount, .expense-amount, #display-lsim-resultado, #lsim-val-cost, #lsim-val-diff, #display-calculado, .cat-bar-amount {
     transition: filter 0.3s ease;
 }
 
-/* Aplica o blur quando a classe está ativa no body, EXCETO no limite diário */
-body.privacy-mode .b-amount:not(#display-diario),
-body.privacy-mode .expense-amount,
-body.privacy-mode #display-lsim-resultado,
-body.privacy-mode #lsim-val-cost,
-body.privacy-mode #lsim-val-diff,
-body.privacy-mode #display-calculado,
-body.privacy-mode .cat-bar-amount {
+body.privacy-mode .b-amount:not(#display-diario), body.privacy-mode .expense-amount, body.privacy-mode #display-lsim-resultado, body.privacy-mode #lsim-val-cost, body.privacy-mode #lsim-val-diff, body.privacy-mode #display-calculado, body.privacy-mode .cat-bar-amount {
     filter: blur(8px);
     user-select: none; 
     opacity: 0.8; 
