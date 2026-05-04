@@ -7,11 +7,10 @@ const setGastoEnEdicion = (val) => { gastoEnEdicion = val; };
 
 const hoy = new Date();
 const mesActual = hoy.getMonth();
-const añoActual = hoy.getFullYear();
+const anoActual = hoy.getFullYear();
 
 let viewMonth = mesActual;
-let viewYear = añoActual;
-
+let viewYear = anoActual;
 let modoActual = 'directo';
 let presupuestoCalculadoTemporalCents = 0;
 
@@ -22,6 +21,7 @@ const inputPctLivre = document.getElementById('input-pct-livre');
 const displayCalculado = document.getElementById('display-calculado');
 const inputMoneda = document.getElementById('input-moneda');
 const inputPresupuesto = document.getElementById('input-presupuesto');
+
 const btnPrivacidade = document.getElementById('btn-privacidade');
 const btnSettingsToggle = document.getElementById('btn-settings-toggle');
 const settingsDropdown = document.getElementById('settings-dropdown');
@@ -32,7 +32,6 @@ if (btnSettingsToggle && settingsDropdown) {
         e.stopPropagation(); 
         settingsDropdown.classList.toggle('oculto');
     });
-
     document.addEventListener('click', (e) => {
         if (!settingsDropdown.contains(e.target) && !btnSettingsToggle.contains(e.target)) {
             settingsDropdown.classList.add('oculto');
@@ -60,18 +59,17 @@ if (btnPrivacidade) {
         saveStore();
     });
 }
-// ----------------------------------
 
+// ----------------------------------
 function init() {
     const hasData = loadStore();
     inputMoneda.value = state.monedaActual;
     
-    // Aplica o estado visual da privacidade logo ao abrir o app
     actualizarModoPrivacidade();
     
     const activeFlag = document.querySelector(`.flag[data-lang="${currentLang}"]`);
     if (activeFlag) activeFlag.classList.add('active');
-
+    
     aplicarTraduccion(gastoEnEdicion);
     renderizarSelectCategorias(state.categoriasCustom);
 
@@ -87,12 +85,10 @@ function mostrarPantallaPrincipal() {
     document.getElementById('pantalla-configuracion').classList.add('oculto');
     document.getElementById('pantalla-simulador').classList.add('oculto');
     document.getElementById('pantalla-principal').classList.remove('oculto');
-    // document.getElementById('btn-editar-presupuesto').classList.remove('oculto'); // Removido daqui, agora fica no dropdown
     
     viewMonth = hoy.getMonth();
     viewYear = hoy.getFullYear();
     document.getElementById('btn-next-month').disabled = true;
-
     actualizarInterfaz(state, viewMonth, viewYear, hoy);
 }
 
@@ -127,8 +123,6 @@ document.getElementById('lang-container').addEventListener('click', (e) => {
         if(!document.getElementById('pantalla-principal').classList.contains('oculto')) {
             actualizarInterfaz(state, viewMonth, viewYear, hoy);
         }
-        // Fecha o dropdown ao selecionar o idioma
-       //  if (settingsDropdown) settingsDropdown.classList.add('oculto');
     }
 });
 
@@ -141,7 +135,6 @@ tabDirecto.addEventListener('click', () => {
     modoActual = 'directo'; tabDirecto.classList.add('active'); tabCalc.classList.remove('active'); 
     modoDirecto.classList.remove('oculto'); modoCalculadora.classList.add('oculto'); 
 });
-
 tabCalc.addEventListener('click', () => { 
     modoActual = 'calculadora'; tabCalc.classList.add('active'); tabDirecto.classList.remove('active'); 
     modoCalculadora.classList.remove('oculto'); modoDirecto.classList.add('oculto'); 
@@ -157,7 +150,6 @@ document.querySelectorAll('.input-calc').forEach(input => {
         const liquidezTotalCents = Math.round(rentaCents * porcentajeLiquidez);
         
         presupuestoCalculadoTemporalCents = Math.max(0, liquidezTotalCents - fixosCents);
-
         const localeStr = currentLang === 'es' ? 'es-ES' : (currentLang === 'pt' ? 'pt-BR' : 'en-US');
         displayCalculado.innerText = new Intl.NumberFormat(localeStr, { style: 'currency', currency: inputMoneda.value }).format(presupuestoCalculadoTemporalCents / 100);
     });
@@ -168,7 +160,7 @@ document.getElementById('btn-comenzar').addEventListener('click', () => {
     const presupuestoDirectoCents = Math.round((isNaN(inputVal) ? 0 : inputVal) * 100);
     
     state.presupuestoMensual = modoActual === 'directo' ? presupuestoDirectoCents : presupuestoCalculadoTemporalCents;
-    state.monedaActual = inputMoneda.value; 
+    state.monedaActual = inputMoneda.value;
     
     if (state.presupuestoMensual <= 0) {
         alert(t('errorBudget'));
@@ -185,9 +177,7 @@ document.getElementById('btn-comenzar').addEventListener('click', () => {
     guardarYMostrar();
 });
 
-// Event Listeners - CRUD Operations
-
-// Auto-categorización Histórica
+// Auto-categorização Histórica
 document.getElementById('input-desc').addEventListener('input', (e) => {
     const query = e.target.value.trim().toLowerCase();
     if (query.length > 2) {
@@ -228,31 +218,6 @@ document.getElementById('form-gasto').addEventListener('submit', (e) => {
     }
 });
 
-document.getElementById('lista-historial').addEventListener('click', (e) => {
-    const btnDelete = e.target.closest('.delete-btn');
-    const btnEdit = e.target.closest('.edit-btn');
-    
-    if (btnDelete) {
-        const id = parseInt(btnDelete.getAttribute('data-id'), 10);
-        state.historialGlobal = state.historialGlobal.filter(g => g.id !== id);
-        if (gastoEnEdicion === id) resetFormularioGasto(setGastoEnEdicion); 
-        guardarYMostrar();
-        showToast("🗑️ Eliminado");
-    } else if (btnEdit) {
-        const id = parseInt(btnEdit.getAttribute('data-id'), 10);
-        const gasto = state.historialGlobal.find(g => g.id === id);
-        if (gasto) {
-            document.getElementById('input-monto').value = (gasto.monto / 100).toFixed(2);
-            document.getElementById('input-desc').value = gasto.desc;
-            document.getElementById('input-categoria').value = gasto.categoria;
-            setGastoEnEdicion(id);
-            document.getElementById('btn-guardar-gasto').innerText = t('btnEdit');
-            document.getElementById('input-monto').focus();
-            window.scrollTo({ top: document.getElementById('form-gasto').offsetTop - 20, behavior: 'smooth' });
-        }
-    }
-});
-
 document.getElementById('btn-toggle-nueva-cat').addEventListener('click', () => {
     document.getElementById('area-nueva-categoria').classList.toggle('oculto');
 });
@@ -272,13 +237,10 @@ document.getElementById('btn-guardar-nueva-cat').addEventListener('click', () =>
 });
 
 document.getElementById('btn-editar-presupuesto').addEventListener('click', () => {
-    // Fecha o dropdown antes de mudar de tela
     if (settingsDropdown) settingsDropdown.classList.add('oculto');
-    
     resetFormularioGasto(setGastoEnEdicion); 
     document.getElementById('pantalla-principal').classList.add('oculto');
     document.getElementById('pantalla-simulador').classList.add('oculto');
-    // document.getElementById('btn-editar-presupuesto').classList.add('oculto'); // Removido
     document.getElementById('pantalla-configuracion').classList.remove('oculto');
     document.getElementById('area-gastos-previos').classList.add('oculto');
     tabDirecto.click();
@@ -316,10 +278,10 @@ document.getElementById('input-archivo').addEventListener('change', (e) => {
                 }
                 guardarYMostrar();
             } else {
-                alert("Error: El archivo no tiene el formato correcto.");
+                alert("Error: El arquivo não tem o formato correto.");
             }
         } catch (err) {
-            alert("Error: Archivo inválido o corrupto.");
+            alert("Error: Arquivo inválido ou corrupto.");
         }
     };
     reader.readAsText(file);
@@ -338,13 +300,11 @@ const pantallaPrincipal = document.getElementById('pantalla-principal');
 const pantallaSimulador = document.getElementById('pantalla-simulador');
 const btnAbrirSimulador = document.getElementById('btn-abrir-simulador');
 const btnCerrarSimulador = document.getElementById('btn-cerrar-simulador');
-
 const lsimMonto = document.getElementById('input-lsim-monto');
 const sliderAnos = document.getElementById('slider-lsim-anos');
 const sliderTasa = document.getElementById('slider-lsim-tasa');
 const valAnos = document.getElementById('val-anos');
 const valTasa = document.getElementById('val-tasa');
-
 const lsimValCost = document.getElementById('lsim-val-cost');
 const lsimValFuture = document.getElementById('display-lsim-resultado');
 const lsimValDiff = document.getElementById('lsim-val-diff');
@@ -375,18 +335,18 @@ function calcularPerdidaInvisible() {
     
     valAnos.innerText = tVal;
     valTasa.innerText = rVal.toFixed(1) + '%';
-
+    
     const r = rVal / 100;
     const futureValueCents = pCents * Math.pow(1 + r, tVal);
     const differenceCents = futureValueCents - pCents;
-
+    
     const localeStr = currentLang === 'es' ? 'es-ES' : (currentLang === 'pt' ? 'pt-BR' : 'en-US');
     const formatter = new Intl.NumberFormat(localeStr, { style: 'currency', currency: state.monedaActual });
-
+    
     lsimValCost.innerText = formatter.format(pCents / 100);
     lsimValFuture.innerText = formatter.format(futureValueCents / 100);
     lsimValDiff.innerText = formatter.format(differenceCents / 100);
-
+    
     if (futureValueCents > 0) {
         const costPercentage = (pCents / futureValueCents) * 100;
         barCost.style.width = `${costPercentage}%`;
@@ -400,6 +360,93 @@ function calcularPerdidaInvisible() {
 [lsimMonto, sliderAnos, sliderTasa].forEach(input => {
     input.addEventListener('input', calcularPerdidaInvisible);
 });
+
+// --- LÓGICA SWIPE-TO-ACTION UNIVERSAL (Tátil + Mouse) ---
+const listaHistorial = document.getElementById('lista-historial');
+let startX = 0;
+let activeItem = null;
+const MAX_SWIPE = -110; 
+const SWIPE_THRESHOLD = -40; 
+
+listaHistorial.addEventListener('pointerdown', (e) => {
+    const target = e.target.closest('.swipe-content');
+    if (!target) return;
+
+    if (activeItem && activeItem !== target) {
+        activeItem.style.transform = 'translateX(0px)';
+    }
+
+    startX = e.clientX; 
+    activeItem = target;
+    activeItem.classList.add('no-transition'); 
+    
+    // Captura o ponteiro para arrastar sem perder o foco
+    activeItem.setPointerCapture(e.pointerId);
+});
+
+listaHistorial.addEventListener('pointermove', (e) => {
+    if (!activeItem) return;
+    
+    const currentX = e.clientX;
+    const deltaX = currentX - startX;
+
+    if (deltaX < 0) {
+        const translateX = Math.max(deltaX, MAX_SWIPE);
+        activeItem.style.transform = `translateX(${translateX}px)`;
+    }
+});
+
+listaHistorial.addEventListener('pointerup', (e) => {
+    if (!activeItem) return;
+    
+    activeItem.classList.remove('no-transition'); 
+    activeItem.releasePointerCapture(e.pointerId); // Solta o ponteiro
+    
+    const transformStr = activeItem.style.transform;
+    const match = transformStr.match(/translateX\(([-0-9.]+)px\)/);
+    const currentTranslateX = match ? parseFloat(match[1]) : 0;
+
+    if (currentTranslateX < SWIPE_THRESHOLD) {
+        activeItem.style.transform = `translateX(${MAX_SWIPE}px)`;
+        if (navigator.vibrate) navigator.vibrate(15); 
+    } else {
+        activeItem.style.transform = `translateX(0px)`;
+        activeItem = null;
+    }
+});
+
+// Fecha se clicar em editar ou deletar
+listaHistorial.addEventListener('click', (e) => {
+    const btnDelete = e.target.closest('.delete-btn');
+    const btnEdit = e.target.closest('.edit-btn');
+    
+    if (activeItem && (btnDelete || btnEdit)) {
+        activeItem.style.transform = `translateX(0px)`;
+        activeItem = null;
+    }
+
+    if (btnDelete) {
+        const id = parseInt(btnDelete.getAttribute('data-id'), 10);
+        state.historialGlobal = state.historialGlobal.filter(g => g.id !== id);
+        if (gastoEnEdicion === id) resetFormularioGasto(setGastoEnEdicion);
+        if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
+        guardarYMostrar();
+        showToast("🗑️ Eliminado");
+    } else if (btnEdit) {
+        const id = parseInt(btnEdit.getAttribute('data-id'), 10);
+        const gasto = state.historialGlobal.find(g => g.id === id);
+        if (gasto) {
+            document.getElementById('input-monto').value = (gasto.monto / 100).toFixed(2);
+            document.getElementById('input-desc').value = gasto.desc;
+            document.getElementById('input-categoria').value = gasto.categoria;
+            setGastoEnEdicion(id);
+            document.getElementById('btn-guardar-gasto').innerText = t('btnEdit');
+            document.getElementById('input-monto').focus();
+            window.scrollTo({ top: document.getElementById('form-gasto').offsetTop - 20, behavior: 'smooth' });
+        }
+    }
+});
+// -----------------------------
 
 init();
 

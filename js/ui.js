@@ -204,16 +204,19 @@ export function actualizarInterfaz(state, viewMonth, viewYear, hoy) {
             const infoCat = categoriasActuales.find(c => c.id === g.categoria) || { emoji: '🏷️', nombre: g.categoria };
             
             const li = document.createElement('li');
+            li.className = 'swipe-item';
             li.innerHTML = `
-                <div class="cat-icon">${escapeHTML(infoCat.emoji)}</div>
-                <div class="expense-info">
-                    <span class="expense-desc" title="${escapeHTML(g.desc)}">${escapeHTML(g.desc)}</span>
-                    <span class="expense-cat">${escapeHTML(infoCat.nombre)}</span>
-                    <span class="expense-date">${escapeHTML(fechaStr)}</span>
-                </div>
-                <div class="actions-row">
-                    <span class="expense-amount" style="margin-right: 8px;">${escapeHTML(formatoDinero.format(g.monto / 100))}</span>
+                <div class="swipe-actions">
                     ${isCurrentMonth ? `<button class="edit-btn" data-id="${g.id}">✏️</button><button class="delete-btn" data-id="${g.id}">🗑️</button>` : ''}
+                </div>
+                <div class="swipe-content">
+                    <div class="cat-icon">${escapeHTML(infoCat.emoji)}</div>
+                    <div class="expense-info">
+                        <span class="expense-desc" title="${escapeHTML(g.desc)}">${escapeHTML(g.desc)}</span>
+                        <span class="expense-cat">${escapeHTML(infoCat.nombre)}</span>
+                        <span class="expense-date">${escapeHTML(fechaStr)}</span>
+                    </div>
+                    <span class="expense-amount" style="margin-right: 8px;">${escapeHTML(formatoDinero.format(g.monto / 100))}</span>
                 </div>
             `;
             fragList.appendChild(li);
